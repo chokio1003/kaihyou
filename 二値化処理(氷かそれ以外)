@@ -1,0 +1,24 @@
+#画像合成の処理にこの処理付け足せば閾値処理できる。出力画像からRGBに割り当てうまくいかなかったのでこの処理で続行。
+
+R = r*255
+G = g*255
+B = b*255
+R = np.array(R, dtype='u1')
+G = np.array(G, dtype='u1')
+B = np.array(B, dtype='u1')
+
+for i in range(600):　#閾値も状況に合わせて変える
+    for j in range(500):
+        if G[j][i] > 65:
+            R[j][i] = 0
+            G[j][i] = 0
+        if G[j][i] > 0:
+            G[j][i] = 0
+        if R[j][i] < 50:
+            R[j][i] = 0
+            
+          
+mask = np.dstack((R, G, B))
+plt.imshow(mask)
+
+cv2.imwrite("201603270300mask.png",R)　#画像保存(黒白)

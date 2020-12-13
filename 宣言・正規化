@@ -1,0 +1,14 @@
+%matplotlib inline
+import matplotlib.pyplot as plt
+import numpy as np
+import cv2
+import numpy
+import os
+from scipy.interpolate import RectBivariateSpline
+#最小値0、最大値1にする数量正規化メソッド
+def normalization(x):
+    x_min = x.min()
+    x_max = x.max()
+    x_norm = (x - x_min) / (x_max - x_min)
+    return x_norm   #正規化した配列を返す
+    

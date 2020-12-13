@@ -1,0 +1,13 @@
+r = b05k
+g = b04k
+b = b03k
+r = np.where(r < 0, 0, r)
+g = np.where(g < 0, 0, g)
+b = np.where(b < 0, 0, b)
+r = np.where(r > 1, 1, r)
+g = np.where(g > 1, 1, g)
+b = np.where(b > 1, 1, b)
+rgb = np.dstack((r, g, b))
+plt.imshow(rgb,extent=(lon[0],lon[-1],lat[-1],lat[0]),interpolation='none')
+plt.colorbar();
+plt.imsave('201602160300nc.png',rgb);

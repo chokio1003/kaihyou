@@ -1,0 +1,120 @@
+%matplotlib inline
+import matplotlib.pyplot as plt
+import numpy as np
+import cv2
+import numpy
+import os
+from scipy.interpolate import RectBivariateSpline
+
+data01 = cv2.imread('201603270300/png/201603270300b01.png',-1)
+data02 = cv2.imread('201603270300/png/201603270300b02.png',-1)
+data03 = cv2.imread('201603270300/png/201603270300b03.png',-1)
+data04 = cv2.imread('201603270300/png/201603270300b04.png',-1)
+data05 = cv2.imread('201603270300/png/201603270300b05.png',-1)
+data06 = cv2.imread('201603270300/png/201603270300b06.png',-1)
+data07 = cv2.imread('201603270300/png/201603270300b07.png',-1)
+data08 = cv2.imread('201603270300/png/201603270300b08.png',-1)
+data09 = cv2.imread('201603270300/png/201603270300b09.png',-1)
+data10 = cv2.imread('201603270300/png/201603270300b10.png',-1)
+data11 = cv2.imread('201603270300/png/201603270300b11.png',-1)
+data12 = cv2.imread('201603270300/png/201603270300b12.png',-1)
+data13 = cv2.imread('201603270300/png/201603270300b13.png',-1)
+data14 = cv2.imread('201603270300/png/201603270300b14.png',-1)
+data15 = cv2.imread('201603270300/png/201603270300b15.png',-1)
+data16 = cv2.imread('201603270300/png/201603270300b16.png',-1)
+data17 = cv2.imread('201603270300/png/201603270300mask.png',0)
+
+for i in range(600):
+    for j in range(500):
+         if data17[j][i]>0:
+                data17[j][i]=1
+                
+                csv = np.empty([300000, 17])
+h=0
+for i in range(600):
+    for j in range(500):
+        csv[h][0] = data01[j][i]
+        h=h+1
+h=0
+for i in range(600):
+    for j in range(500):
+        csv[h][1] = data02[j][i]
+        h=h+1
+h=0
+for i in range(600):
+    for j in range(500):
+        csv[h][2] = data03[j][i]
+        h=h+1
+h=0
+for i in range(600):
+    for j in range(500):
+        csv[h][3] = data04[j][i]
+        h=h+1
+h=0
+for i in range(600):
+    for j in range(500):
+        csv[h][4] = data05[j][i]
+        h=h+1
+h=0
+for i in range(600):
+    for j in range(500):
+        csv[h][5] = data06[j][i]
+        h=h+1
+h=0
+for i in range(600):
+    for j in range(500):
+        csv[h][6] = data07[j][i]
+        h=h+1
+h=0
+for i in range(600):
+    for j in range(500):
+        csv[h][7] = data08[j][i]
+        h=h+1
+h=0
+for i in range(600):
+    for j in range(500):
+        csv[h][8] = data09[j][i]
+        h=h+1
+h=0
+for i in range(600):
+    for j in range(500):
+        csv[h][9] = data10[j][i]
+        h=h+1
+h=0
+for i in range(600):
+    for j in range(500):
+        csv[h][10] = data11[j][i]
+        h=h+1
+h=0
+for i in range(600):
+    for j in range(500):
+        csv[h][11] = data12[j][i]
+        h=h+1
+h=0
+for i in range(600):
+    for j in range(500):
+        csv[h][12] = data13[j][i]
+        h=h+1
+h=0
+for i in range(600):
+    for j in range(500):
+        csv[h][13] = data14[j][i]
+        h=h+1
+h=0
+for i in range(600):
+    for j in range(500):
+        csv[h][14] = data15[j][i]
+        h=h+1
+h=0
+for i in range(600):
+    for j in range(500):
+        csv[h][15] = data16[j][i]
+        h=h+1
+h=0
+for i in range(600):
+    for j in range(500):
+        csv[h][16] = data17[j][i]
+        h=h+1
+
+np.savetxt('201603270300mask.txt', csv,fmt = "%d")
+csv.shape

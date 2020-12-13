@@ -1,0 +1,74 @@
+fnam = '201602160300/HS_H08_20160216_0300_B04_JP01_R10_S0101.DAT' #BandData読み取り
+
+fsiz = os.path.getsize(fnam)  #ヘッダーから適切なサイズ指定
+with open(fnam,'rb') as fp:
+ head = fp.read(fsiz)
+ data = np.frombuffer(fp.read(),dtype='u2')
+
+imax, = np.frombuffer(head[3:5],dtype='u2')
+j,h = 0,[]
+for i in range(imax):
+ n, = np.frombuffer(head[j+1:j+3],dtype='u2')
+ h.append(head[j:j+n])
+ j += n
+
+colum, = np.frombuffer(h[1][5:7],dtype='u2')
+line, = np.frombuffer(h[1][7:9],dtype='u2')
+
+
+
+NCOL = int(colum)　#イメージ縦×横サイズ
+NLIN = int(line)
+hsiz = os.path.getsize(fnam)- NLIN*NCOL*2
+with open(fnam,'rb') as fp:
+ head = fp.read(hsiz)
+ data = np.frombuffer(fp.read(),dtype='u2').reshape(NLIN,NCOL)
+    
+validbit, = np.frombuffer(h[4][13:15],dtype='u2')
+sub_lon, = np.frombuffer(h[2][3:11])
+cfac,lfac = np.frombuffer(h[2][11:19],dtype='u4')
+coff,loff = np.frombuffer(h[2][19:27],dtype='f4')
+p1,p2,p3,p4,p5,p6,p7 = np.frombuffer(h[2][27:83])
+band, = np.frombuffer(h[4][3:5],dtype='u2')
+wlen, = np.frombuffer(h[4][5:13])
+verr,vout = np.frombuffer(h[4][15:19],dtype='u2')
+gain,cnst = np.frombuffer(h[4][19:35])
+lnum, = np.frombuffer(h[6][5:7],dtype='u2')
+
+LMIN = 1.0e-60
+lrad = gain*data+cnst
+lrad[lrad < LMIN] = LMIN
+if band > 7:　#Band08~16は赤外センサーなので特殊な処理する
+ wlen *= 1.0e-6
+ lrad *= 1.0e6
+ c0,c1,c2,c_0,c_1,c_2,c_c,c_h,c_k = np.frombuffer(h[4][35:107])
+ t_e = c_h*c_c/(c_k*wlen*np.log(2*c_h*c_c**2/(wlen**5*lrad)+1))
+ val = c0+c1*t_e+c2*t_e**2
+else:
+ coef, = np.frombuffer(h[4][35:43])
+ val = coef*lrad
+    
+lon = np.arange(139.0,146.0,0.01)　#緯度経度指定
+lat = np.arange(47.5,42.5,-0.01)
+col = np.arange(NCOL)+1
+lin = np.arange(NLIN)+lnum
+rad_lat = np.radians(lat)
+c_lat = np.arctan(p5*np.tan(rad_lat))
+c_lon = np.radians(lon-sub_lon)
+cos_lat = np.cos(c_lat).reshape(-1,1)
+sin_lat = np.sin(c_lat).reshape(-1,1)
+cos_lon = np.cos(c_lon).reshape(1,-1)
+sin_lon = np.sin(c_lon).reshape(1,-1)
+rl = p3/np.sqrt(1.0-p4*cos_lat**2)
+r1 = p1-rl*cos_lat*cos_lon
+r2 = -rl*cos_lat*sin_lon
+r3 = rl*sin_lat
+rn = np.sqrt(r1*r1+r2*r2+r3*r3)
+x = np.degrees(np.arctan(-r2/r1))
+y = np.degrees(np.arcsin(-r3/rn))
+col_out = coff+x/65536*cfac
+lin_out = loff+y/65536*lfac
+b04k = RectBivariateSpline(lin,col,val).ev(lin_out,col_out)　#後で補正かける用
+b04 = RectBivariateSpline(lin,col,data).ev(lin_out,col_out)　#基本そのまま使う
+
+#Bandと緯度経度は任意に変更
